@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<title></title>
+	</head>
+	<body>
+		<div class="container">
+			<form action="index.php" method="post">
+				<br/>
+				<div id="mydiv">
+					<p id="p1">数据为空</p>
+				</div>
+					<textarea rows="10" cols="60" name="input" id="mywork" style="resize: none;"></textarea>
+					<textarea rows="10" cols="60" name="output" id="myout" disabled="disabled" style="resize: none;"></textarea></br>
+				<input type="button" class="btn btn-lg btn-primary" onclick="Value()" value="提交"/>
+				<input type="button" class="btn btn-lg btn-primary" onclick="clearValue()" value="清空"/>
+			</form>
+		</div>
+	</body>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$("#mywork").on({
+			paste: function (e) {
+				setTimeout(() => {
+					var str=$(this).val();
+					var arr1=str.split("\n")
+					var arr2=arr1[0].split("\t");
+					crebox(arr2);
+				// console.log(arr1);
+				// console.log(arr2);
+				}, 500);
+			}
+		});
+		
+	});
+	function crebox($a){
+		var p = document.createElement("p");
+		p.setAttribute("id","p1");
+		$a.forEach(function(item,i){
+			var txt=document.createTextNode(item);
+			var input=document.createElement("input");
+			input.setAttribute("type","checkbox");
+			input.setAttribute("name","field");
+			input.setAttribute("checked","checked");
+			input.setAttribute("value",item);
+			p.appendChild(txt);
+			p.appendChild(input);
+		});
+		var parent = document.getElementById("mydiv");
+		var child = document.getElementById("p1");
+		parent.replaceChild(p, child);
+	}
+	function Value(){
+		//获取input类型是checkBox并且 name="box"选中的checkBox的元素
+		var ids = $('input[type=checkbox]');
+		var bolarr =new Array();
+	    ids.each(function (i) {
+			bolarr[i]=$(this).prop("checked");
+		});
+		//console.log(bolarr);
+		sumbit(bolarr);
+	}
+	function sumbit($bolarr){
+		var da=$("#mywork").val().split("\n");
+		var a = new Array();
+		var gg="INSERT INTO xxx";
+		for(var i=0;i<da.length-1;i++){
+			a[i] = new Array();
+			var every=da[i].split("\t");
+			for(var j=0;j<$bolarr.length;j++){
+				a[i][j] = every[j];
+				if(i!=0){
+					if($bolarr[j]){
+						a[i][j] = "'"+every[j]+"'";
+					}
+				}
+				if(a[i][j]==""){
+					a[i][j] = "''";
+				}
+			}
+			if(i==0){
+				gg=gg+"("+a[i].toString()+")values\n";
+			}else{
+				gg=gg+"("+a[i].toString()+"),\n";
+			}
+		}
+		gg = gg.substring(0, gg.lastIndexOf(","))+";";
+		$("#myout").val(gg);
+		//console.log(aa);
+		//console.log(a);
+		// console.log(da);
+	}
+	function clearValue(){
+		$('#mywork').val('');
+		$('#myout').val('');
+		replaceEpmty();
+	}
+	function replaceEpmty(){
+		var p = document.createElement("p");
+		p.setAttribute("id","p1");
+		var txt=document.createTextNode("数据为空1");
+		p.appendChild(txt);
+		var parent = document.getElementById("mydiv");
+		var child = document.getElementById("p1");
+		parent.replaceChild(p, child);
+	}
+</script>
+</html>
